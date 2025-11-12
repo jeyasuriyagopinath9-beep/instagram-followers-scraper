@@ -1,5 +1,5 @@
 import { PlaywrightCrawler, Dataset } from 'crawlee';
-import { Actor } from 'apify'; // <-- This line changed
+import { Actor } from 'apify';
 
 // Initialize the Apify Actor
 await Actor.init();
@@ -23,6 +23,21 @@ const crawler = new PlaywrightCrawler({
         log.info(`Scraping followers for: ${username}`);
 
         await page.goto(`https://www.instagram.com/${username}/`);
+
+        // --- START NEW CODE TO HANDLE POP-UPS ---
+        try {
+            // This selector targets the "Allow all cookies" button
+            // We use a short timeout because it might not always appear
+            const cookieButtonSelector = 'button:has-text("Allow all cookies")';
+            
+            log.info('Checking for cookie banner...');
+            await page.click(cookieButtonSelector, { timeout: 5000 }); // Wait max 5s
+            log.info('Closed cookie banner.');
+            await page.waitForTimeout(1000); // Wait a moment for the banner to disappear
+        } catch (e) {
+            log.warning('Cookie banner not found or click failed. It might not have appeared, or the selector is outdated. Continuing...');
+        }
+        // --- END NEW CODE ---
 
         try {
             // Click the link to the followers modal

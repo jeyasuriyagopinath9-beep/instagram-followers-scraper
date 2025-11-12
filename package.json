@@ -1,0 +1,12 @@
+{
+  "name": "instagram-followers-scraper",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "apify": "^2.2.0",
+    "playwright": "^1.45.0"
+  }
+}

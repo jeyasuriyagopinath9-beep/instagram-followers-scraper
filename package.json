@@ -2,12 +2,14 @@
   "name": "instagram-followers-scraper",
   "version": "1.0.0",
   "type": "module",
+  "description": "Apify actor to scrape Instagram followers",
   "main": "main.js",
   "scripts": {
     "start": "node main.js"
   },
   "dependencies": {
     "crawlee": "^3.15.3",
-    "playwright": "^1.56.1"
+    "playwright": "^1.56.1",
+    "@apify/actor": "^2.0.2"
   }
 }

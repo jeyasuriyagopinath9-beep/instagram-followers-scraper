@@ -10,6 +10,6 @@
   "dependencies": {
     "crawlee": "^3.15.3",
     "playwright": "^1.56.1",
-    "@apify/actor": "^2.0.2"
+    "apify": "^3.1.12"
   }
 }

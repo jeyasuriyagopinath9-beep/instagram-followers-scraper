@@ -1,7 +1,7 @@
-import { PlaywrightCrawler, Dataset, Input } from 'crawlee';
+import { PlaywrightCrawler, Dataset, Apify } from 'crawlee';
 
 // Get input from Apify
-const input = await Input.get();
+const input = await Apify.getInput();
 const username = input?.username;
 if (!username) throw new Error('Please provide "username" in input JSON.');
 

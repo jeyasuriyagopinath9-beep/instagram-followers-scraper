@@ -13,6 +13,9 @@ if (!username) {
 }
 
 const crawler = new PlaywrightCrawler({
+    // We are increasing the timeout because we are adding more steps
+    // and Instagram can be slow.
+    navigationTimeout: 60000, // 60 seconds
     launchContext: { 
         launchOptions: { 
             headless: true 
@@ -22,32 +25,45 @@ const crawler = new PlaywrightCrawler({
     async requestHandler({ page, log }) {
         log.info(`Scraping followers for: ${username}`);
 
-        // --- THIS IS THE FIXED LINE ---
         await page.goto(`https://www.instagram.com/${username}/`);
 
-        // --- START NEW UPDATED POP-UP CODE ---
+        // --- ROBUST POP-UP & BLOCKER HANDLING ---
         try {
-            log.info('Checking for cookie banner...');
-
-            // Create locators for common cookie button texts
+            log.info('Checking for any pop-ups (cookie, login, etc.)...');
+            
+            // These are the most common "blocker" buttons.
             const cookieButton1 = page.locator('button:has-text("Allow all cookies")');
             const cookieButton2 = page.locator('button:has-text("Accept All")');
+            const loginModalClose = page.locator('div[role="dialog"] [aria-label="Close"]');
 
-            // Wait for one of them to be visible and click it
+            // We will wait up to 10 seconds for *any* of these to appear.
+            // If one appears, we click it. If not, we continue.
             await Promise.race([
-                cookieButton1.click({ timeout: 7000 }), // 7 second timeout
-                cookieButton2.click({ timeout: 7000 })
+                cookieButton1.click({ timeout: 10000 }),
+                cookieButton2.click({ timeout: 10000 }),
+                loginModalClose.click({ timeout: 10000 })
             ]);
             
-            log.info('Successfully closed cookie banner.');
-            await page.waitForTimeout(1000); // Wait for banner to fade
+            log.info('A pop-up was found and closed.');
+            await page.waitForTimeout(1500); // Wait for modal to disappear
         } catch (e) {
-            log.warning('Cookie banner not found or click failed. This is OK if the banner did not appear.');
+            log.warning('No pop-ups were found or clicked. This is OK if none appeared.');
         }
-        // --- END NEW UPDATED POP-UP CODE ---
+
+        // --- BOT DETECTION / LOGIN WALL CHECK ---
+        // After handling pop-ups, we check if we are on a login wall.
+        // If we can see the "Sign up" link, it means Instagram has blocked us.
+        const isLoginWall = await page.locator('a[href*="/accounts/signup/"]').isVisible();
+        if (isLoginWall) {
+            throw new Error(`Instagram is blocking the scraper with a "Login Wall". The scraper cannot see the profile. Try again later or with a proxy.`);
+        }
+        log.info('Not a login wall, proceeding...');
+        
+        // --- END OF NEW LOGIC ---
 
         try {
             // Click the link to the followers modal
+            log.info('Attempting to click followers link...');
             await page.click('a[href$="/followers/"]', { timeout: 10000 });
             log.info('Clicked followers link.');
 
@@ -62,7 +78,7 @@ const crawler = new PlaywrightCrawler({
             
             let modalBody;
             try {
-                // Try a common selector for the scrollable area
+                // This is the class for the scrollable area
                 modalBody = await page.waitForSelector('div._aano', { timeout: 5000 });
             } catch (e) {
                 log.warning('Could not find specific scrollable container "div._aano", falling back to dialog role. Scrolling might be less reliable.');
@@ -93,6 +109,7 @@ const crawler = new PlaywrightCrawler({
 
             // Extract usernames from the modal
             const followerUsernames = await page.$$eval(
+                // This selector targets the username text inside the list
                 'div[role="dialog"] ul li a[role="link"] span[dir="auto"]', 
                 nodes => nodes.map(n => n.textContent).filter(Boolean)
             );

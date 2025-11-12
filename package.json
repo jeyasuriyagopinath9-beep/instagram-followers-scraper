@@ -1,12 +1,13 @@
 {
   "name": "instagram-followers-scraper",
   "version": "1.0.0",
+  "type": "module",
   "main": "main.js",
   "scripts": {
     "start": "node main.js"
   },
   "dependencies": {
-    "crawlee": "^3.12.2",
-    "playwright": "^1.45.0"
+    "crawlee": "^3.15.3",
+    "playwright": "^1.56.1"
   }
 }

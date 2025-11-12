@@ -1,5 +1,5 @@
 import { PlaywrightCrawler, Dataset } from 'crawlee';
-import { Actor } from '@apify/actor';
+import { Actor } from 'apify'; // <-- This line changed
 
 // Initialize the Apify Actor
 await Actor.init();

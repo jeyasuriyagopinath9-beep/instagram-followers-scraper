@@ -1,14 +1,12 @@
-import { PlaywrightCrawler, Dataset } from 'crawlee';
+import { PlaywrightCrawler, Dataset, Input } from 'crawlee';
 
-const input = await Dataset.getInput(); // Get input from Apify input JSON
+// Get input from Apify
+const input = await Input.get();
 const username = input?.username;
-
 if (!username) throw new Error('Please provide "username" in input JSON.');
 
 const crawler = new PlaywrightCrawler({
-    launchContext: {
-        launchOptions: { headless: true },
-    },
+    launchContext: { launchOptions: { headless: true } },
     async requestHandler({ page, log }) {
         log.info(`Scraping followers for: ${username}`);
 
@@ -20,10 +18,10 @@ const crawler = new PlaywrightCrawler({
 
         // Scroll to load followers
         let previousHeight = 0;
-        for (let i = 0; i < 50; i++) { // scroll 50 times
+        for (let i = 0; i < 50; i++) {
             const modal = await page.$('div[role="dialog"] ul');
             const height = await modal.evaluate(el => el.scrollHeight);
-            if (height === previousHeight) break; // stop if no more new followers
+            if (height === previousHeight) break;
             previousHeight = height;
             await modal.evaluate(el => el.scrollBy(0, el.scrollHeight));
             await page.waitForTimeout(1000);

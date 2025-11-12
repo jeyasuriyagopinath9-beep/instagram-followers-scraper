@@ -1,5 +1,5 @@
-# Use the official Apify base image for Node.js 20
-FROM apify/actor-node:20
+# Use the official Apify base image for Node.js 20 AND Playwright/Chromium
+FROM apify/actor-node-playwright-chromium:20
 
 # Copy the package.json and install dependencies
 COPY package.json ./

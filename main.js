@@ -41,8 +41,8 @@ const crawler = new PlaywrightCrawler({
             log.info('Successfully closed cookie banner.');
             await page.waitForTimeout(1000); // Wait for banner to fade
         } catch (e) {
-            log.warning('Cookie banner not found or click failed. This is
-             OK if the banner did not appear.');
+            // --- THIS IS THE FIXED LINE ---
+            log.warning('Cookie banner not found or click failed. This is OK if the banner did not appear.');
         }
         // --- END NEW UPDATED POP-UP CODE ---
 

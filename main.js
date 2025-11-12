@@ -22,7 +22,8 @@ const crawler = new PlaywrightCrawler({
     async requestHandler({ page, log }) {
         log.info(`Scraping followers for: ${username}`);
 
-        await page.goto(`https.www.instagram.com/${username}/`);
+        // --- THIS IS THE FIXED LINE ---
+        await page.goto(`https://www.instagram.com/${username}/`);
 
         // --- START NEW UPDATED POP-UP CODE ---
         try {
@@ -41,7 +42,6 @@ const crawler = new PlaywrightCrawler({
             log.info('Successfully closed cookie banner.');
             await page.waitForTimeout(1000); // Wait for banner to fade
         } catch (e) {
-            // --- THIS IS THE FIXED LINE ---
             log.warning('Cookie banner not found or click failed. This is OK if the banner did not appear.');
         }
         // --- END NEW UPDATED POP-UP CODE ---

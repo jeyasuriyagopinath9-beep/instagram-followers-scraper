@@ -1,0 +1,10 @@
+{
+	"actorSpecification": 1,
+	"name": "instagram-followers-scraper",
+	"version": "1.0",
+	"buildTag": "latest",
+	"dockerfile": "./Dockerfile",
+	"environmentVariables": {
+		"APIFY_DEFAULT_BROWSER_PATH": "/usr/bin/google-chrome-stable"
+	}
+}

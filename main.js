@@ -22,22 +22,29 @@ const crawler = new PlaywrightCrawler({
     async requestHandler({ page, log }) {
         log.info(`Scraping followers for: ${username}`);
 
-        await page.goto(`https://www.instagram.com/${username}/`);
+        await page.goto(`https.www.instagram.com/${username}/`);
 
-        // --- START NEW CODE TO HANDLE POP-UPS ---
+        // --- START NEW UPDATED POP-UP CODE ---
         try {
-            // This selector targets the "Allow all cookies" button
-            // We use a short timeout because it might not always appear
-            const cookieButtonSelector = 'button:has-text("Allow all cookies")';
-            
             log.info('Checking for cookie banner...');
-            await page.click(cookieButtonSelector, { timeout: 5000 }); // Wait max 5s
-            log.info('Closed cookie banner.');
-            await page.waitForTimeout(1000); // Wait a moment for the banner to disappear
+
+            // Create locators for common cookie button texts
+            const cookieButton1 = page.locator('button:has-text("Allow all cookies")');
+            const cookieButton2 = page.locator('button:has-text("Accept All")');
+
+            // Wait for one of them to be visible and click it
+            await Promise.race([
+                cookieButton1.click({ timeout: 7000 }), // 7 second timeout
+                cookieButton2.click({ timeout: 7000 })
+            ]);
+            
+            log.info('Successfully closed cookie banner.');
+            await page.waitForTimeout(1000); // Wait for banner to fade
         } catch (e) {
-            log.warning('Cookie banner not found or click failed. It might not have appeared, or the selector is outdated. Continuing...');
+            log.warning('Cookie banner not found or click failed. This is
+             OK if the banner did not appear.');
         }
-        // --- END NEW CODE ---
+        // --- END NEW UPDATED POP-UP CODE ---
 
         try {
             // Click the link to the followers modal

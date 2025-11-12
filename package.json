@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "crawlee": "^3.15.3",
-    "playwright": "^1.56.1"
+    "playwright": "^1.56.1",
+    "@apify/actor": "^2.3.0"
   }
 }

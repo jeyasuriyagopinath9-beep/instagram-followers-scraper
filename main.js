@@ -1,10 +1,7 @@
-import { PlaywrightCrawler, Dataset } from 'crawlee';
-import { Actor } from '@apify/actor';
+import { PlaywrightCrawler, Dataset, Input } from 'crawlee';
 
-await Actor.init();
-
-// Get input from Apify (actor input JSON)
-const input = await Actor.getInput();
+// Get input from Apify actor JSON
+const input = await Input.get();
 const username = input?.username;
 if (!username) throw new Error('Please provide "username" in input JSON.');
 
@@ -45,4 +42,3 @@ const crawler = new PlaywrightCrawler({
 });
 
 await crawler.run();
-await Actor.exit();
